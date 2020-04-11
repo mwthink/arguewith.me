@@ -12,10 +12,8 @@ const sockets = new Observable<SocketIO.Socket>(sub => {
   io.on('connection', socket => sub.next(socket));
 })
 
-sockets.subscribe(socket => {})
-
-app.get('/', (req, res) => {
-  return res.sendFile(__dirname + '/tpl.html')
+sockets.subscribe(socket => {
+  console.log('got socket connection @', new Date().toLocaleTimeString())
 })
 
 Promise.resolve()
