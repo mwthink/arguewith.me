@@ -26,6 +26,7 @@ export class ChatForm extends React.Component <ChatFormProps, ChatFormState> {
     return (
       <Form onSubmit={this.onSubmit} disabled={Boolean(this.props.disabled)}>
         <Input
+          autoFocus={true}
           type="text"
           required
           value={this.state.inputValue}

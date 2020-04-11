@@ -1,5 +1,6 @@
 import * as React from 'react';
 import * as SocketIOClient from 'socket.io-client';
+import { Container, Row, Col } from 'reactstrap';
 import { ChatMessage } from './ChatMessage';
 import { ChatMessageData } from '../shared';
 import ChatForm from './ChatForm';
@@ -49,15 +50,20 @@ export class App extends React.Component <AppProps, AppState> {
 
   render(){
     return (
-      <div>
-        Connected: {String(this.state.connected)}
-        <br/>
-        {this.state.messages.map(msg => (
-          <ChatMessage key={msg.id} message={msg}/>
-        ))}
-        <hr/>
-        <ChatForm key={this.state.lastSentMessage} disabled={!this.state.connected} onSend={this.sendMessage}/>
-      </div>
+      <Container>
+        <Row>
+          <Col>
+            {this.state.messages.map(msg => (
+              <ChatMessage key={msg.id} message={msg}/>
+            ))}
+          </Col>
+        </Row>
+        <Row style={{paddingTop:'1.5em'}}>
+          <Col>
+            <ChatForm key={this.state.lastSentMessage} disabled={!this.state.connected} onSend={this.sendMessage}/>
+          </Col>
+        </Row>
+      </Container>
     )
   }
 }
