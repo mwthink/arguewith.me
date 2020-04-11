@@ -12,7 +12,6 @@ export interface AppProps {
 interface AppState {
   connected: boolean;
   messages: ChatMessageData[];
-  inputContent: string;
   lastSentMessage: number;
 }
 
@@ -23,7 +22,6 @@ export class App extends React.Component <AppProps, AppState> {
     this.state = {
       connected: false,
       messages: [],
-      inputContent: '',
       lastSentMessage: Date.now(),
     };
 
