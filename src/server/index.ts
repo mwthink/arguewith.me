@@ -2,12 +2,16 @@ import * as Http from 'http';
 import * as Express from 'express';
 import * as SocketIO from 'socket.io';
 import { Observable, ReplaySubject } from 'rxjs';
+import { v4 as uuid4} from 'uuid';
 import { ChatMessageData } from '../shared';
 
 const port = 3000;
 const app = Express();
 const server = Http.createServer(app);
 const io = SocketIO(server);
+(io.engine as any).generateId = () => {
+  return uuid4();
+}
 const messagePool = new ReplaySubject<ChatMessageData>(3);
 
 const sockets = new Observable<SocketIO.Socket>(sub => {
@@ -15,11 +19,17 @@ const sockets = new Observable<SocketIO.Socket>(sub => {
 })
 
 sockets.subscribe(socket => {
-  console.log('got socket connection @', new Date().toLocaleTimeString())
+  // console.log('got socket connection @', new Date().toLocaleTimeString());
 
   socket.on('message', (msg) => {
-    console.log('got message from', socket.id, `that says "${msg}"`);
-    messagePool.next({id:String(Math.random()),sender_id:socket.id,content:msg,timestamp:Date.now()});
+    // console.log('got message from', socket.id, `that says "${msg}"`);
+    messagePool.next({
+      id: String(Math.random()),
+      sender_id: socket.id,
+      sender_display_name: 'Some User',
+      content: msg,
+      timestamp: Date.now()
+    });
   })
 
   messagePool.subscribe(msg => {
