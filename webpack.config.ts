@@ -21,7 +21,8 @@ const config: Configuration = {
   plugins: [
     new HtmlWebpackPlugin({
       title: 'arguewith.me',
-      hash: true
+      hash: true,
+      template: Path.resolve(__dirname, 'src/client/tpl.html')
     })
   ],
   devServer: {
