@@ -6,6 +6,7 @@ const config: Configuration = {
   mode: 'development',
   entry: Path.resolve(__dirname, 'src/client/browser.tsx'),
   output: {
+    path: Path.resolve(__dirname, 'dist/client'),
     filename: 'bundle.js',
   },
   resolve: {
@@ -24,7 +25,7 @@ const config: Configuration = {
     })
   ],
   devServer: {
-    contentBase: Path.join(__dirname, 'dist'),
+    contentBase: false,
     port: 3030,
   }
 };

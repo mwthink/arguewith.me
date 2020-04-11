@@ -4,5 +4,8 @@
     "module": "commonjs",
     "outDir": "dist",
     "jsx": "react"
-  }
+  },
+  "include": [
+    "src/server/**/*",
+  ]
 }

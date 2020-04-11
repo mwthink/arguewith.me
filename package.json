@@ -5,7 +5,10 @@
   "repository": "git@github.com:mwthink/arguewith.me.git",
   "author": "Marshall Williams <marshall@mwthink.net>",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "build:client": "npx webpack",
+    "build:server": "npx tsc"
+  },
   "dependencies": {
     "express": "^4.17.1",
     "react": "^16.13.1",
