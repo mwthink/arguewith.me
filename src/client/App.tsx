@@ -2,6 +2,7 @@ import * as React from 'react';
 import * as SocketIOClient from 'socket.io-client';
 import { ChatMessage } from './ChatMessage';
 import { ChatMessageData } from '../shared';
+import ChatForm from './ChatForm';
 
 
 export interface AppProps {
@@ -12,6 +13,7 @@ interface AppState {
   connected: boolean;
   messages: ChatMessageData[];
   inputContent: string;
+  lastSentMessage: number;
 }
 
 export class App extends React.Component <AppProps, AppState> {
@@ -22,6 +24,7 @@ export class App extends React.Component <AppProps, AppState> {
       connected: false,
       messages: [],
       inputContent: '',
+      lastSentMessage: Date.now(),
     };
 
     this.props.socket.on('connect', () => {
@@ -42,6 +45,8 @@ export class App extends React.Component <AppProps, AppState> {
 
   sendMessage = (msg:string) => {
     this.props.socket.send(msg)
+    // TODO Only proceed after message was "sent"
+    this.setState({lastSentMessage:Date.now()})
   }
 
   render(){
@@ -53,8 +58,7 @@ export class App extends React.Component <AppProps, AppState> {
           <ChatMessage key={msg.id} message={msg}/>
         ))}
         <hr/>
-        <input value={this.state.inputContent} onChange={e => this.setState({inputContent: e.target.value})}/>
-        <button onClick={() => this.sendMessage(this.state.inputContent)}>Send</button>
+        <ChatForm key={this.state.lastSentMessage} disabled={!this.state.connected} onSend={this.sendMessage}/>
       </div>
     )
   }
