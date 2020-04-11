@@ -1,45 +1,59 @@
 import * as React from 'react';
 import * as SocketIOClient from 'socket.io-client';
+import { ChatMessage, ChatMessageD } from './ChatMessage';
 
-export interface AppProps {}
+
+export interface AppProps {
+  socket: SocketIOClient.Socket;
+}
 
 interface AppState {
-  socketConnected: boolean;
+  connected: boolean;
+  messages: ChatMessageD[];
+  inputContent: string;
 }
 
 export class App extends React.Component <AppProps, AppState> {
-  private readonly socket: SocketIOClient.Socket;
 
   constructor(props:any){
     super(props);
     this.state = {
-      socketConnected: false,
+      connected: false,
+      messages: [],
+      inputContent: '',
     };
-    this.socket = SocketIOClient('http://localhost:3000', {
-      autoConnect: false
-    });
 
-    this.socket.on('connect', () => {
-      this.setState({socketConnected: true })
+    this.props.socket.on('connect', () => {
+      this.setState({connected: true })
     })
-    this.socket.on('disconnect', () => {
-      this.setState({socketConnected: false })
+    this.props.socket.on('disconnect', () => {
+      this.setState({connected: false })
     })
   }
 
-  toggleConnection = () => {
-    if( this.socket.connected ) {
-      this.socket.disconnect();
-    }
-    this.socket.connect()
+  componentDidMount(){
+    this.props.socket.on('message', (msg) => {
+      this.setState({
+        messages: this.state.messages.concat(msg)
+      })
+    })
+  }
+
+  sendMessage = (msg:string) => {
+    this.props.socket.send(msg)
   }
 
   render(){
     return (
       <div>
-        Connected: {String(this.state.socketConnected)}
+        Connected: {String(this.state.connected)}
         <br/>
-        <button onClick={this.toggleConnection}>Toggle Connection</button>
+        {this.state.messages.map(msg => (
+          <ChatMessage key={msg.id} message={msg}/>
+        ))}
+        <hr/>
+        <input value={this.state.inputContent} onChange={e => this.setState({inputContent: e.target.value})}/>
+        <button onClick={() => this.sendMessage(this.state.inputContent)}>Send</button>
       </div>
     )
   }
