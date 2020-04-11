@@ -1,6 +1,7 @@
 import * as React from 'react';
 import * as SocketIOClient from 'socket.io-client';
-import { ChatMessage, ChatMessageD } from './ChatMessage';
+import { ChatMessage } from './ChatMessage';
+import { ChatMessageData } from '../shared';
 
 
 export interface AppProps {
@@ -9,7 +10,7 @@ export interface AppProps {
 
 interface AppState {
   connected: boolean;
-  messages: ChatMessageD[];
+  messages: ChatMessageData[];
   inputContent: string;
 }
 

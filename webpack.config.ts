@@ -4,13 +4,13 @@ import * as HtmlWebpackPlugin from 'html-webpack-plugin';
 
 const config: Configuration = {
   mode: 'development',
-  entry: Path.resolve(__dirname, 'client/browser.tsx'),
+  entry: Path.resolve(__dirname, 'src/client/browser.tsx'),
   output: {
     filename: 'bundle.js',
   },
   resolve: {
     extensions: ['.ts','.tsx','.js'],
-    modules: ['client','node_modules']
+    modules: ['node_modules']
   },
   module: {
     rules: [

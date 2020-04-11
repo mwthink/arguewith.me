@@ -1,11 +1,10 @@
 import * as React from 'react';
 import { Card, CardBody, CardTitle, CardText } from 'reactstrap';
-
-export type ChatMessageD = {id:string,sender_id:string,content:string,timestamp:number};
+import { ChatMessageData } from '../shared';
 
 
 export interface ChatMessageProps {
-  message: ChatMessageD
+  message: ChatMessageData
 }
 
 export const ChatMessage: React.SFC<ChatMessageProps> = (props:ChatMessageProps) => (

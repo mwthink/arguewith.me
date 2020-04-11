@@ -2,12 +2,13 @@ import * as Http from 'http';
 import * as Express from 'express';
 import * as SocketIO from 'socket.io';
 import { Observable, ReplaySubject } from 'rxjs';
+import { ChatMessageData } from '../shared';
 
 const port = 3000;
 const app = Express();
 const server = Http.createServer(app);
 const io = SocketIO(server);
-const messagePool = new ReplaySubject<{id:string,sender_id:string,content:string,timestamp:number}>(3);
+const messagePool = new ReplaySubject<ChatMessageData>(3);
 
 const sockets = new Observable<SocketIO.Socket>(sub => {
   io.on('connection', socket => sub.next(socket));
