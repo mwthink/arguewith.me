@@ -35,7 +35,6 @@ const sockets = new Observable<SocketIO.Socket>(sub => {
 
 sockets.subscribe(socket => {
   // console.log('got socket connection @', new Date().toLocaleTimeString());
-  console.log('Connection from', socket['username'])
 
   socket.on('message', (msg) => {
     // console.log('got message from', socket.id, `that says "${msg}"`);
