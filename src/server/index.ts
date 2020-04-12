@@ -14,7 +14,7 @@ const io = SocketIO(server);
   return uuid4();
 }
 
-const messagePool = new ReplaySubject<ChatMessageData>(3);
+const messagePool = new ReplaySubject<ChatMessageData>(100);
 const sockets = new Observable<SocketIO.Socket>(sub => {
   io.on('connection', socket => {
     const authParams: AuthParams = {
