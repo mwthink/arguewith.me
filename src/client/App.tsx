@@ -2,11 +2,14 @@ import * as React from 'react';
 import * as SocketIOClient from 'socket.io-client';
 import { Container, Row, Col } from 'reactstrap';
 import { ChatMessage } from './ChatMessage';
-import { ChatMessageData } from '../shared';
+import { proveWorkUsername } from './pow';
+import { AuthParams, ChatMessageData } from '../shared';
 import ChatForm from './ChatForm';
+import UsernameSetter from './UsernameSetter';
 
 export interface AppProps {
   socket: SocketIOClient.Socket;
+  initialUsername?: string;
 }
 
 interface AppState {
@@ -14,6 +17,7 @@ interface AppState {
   connected: boolean;
   messages: ChatMessageData[];
   lastSentMessage: number;
+  username: string;
 }
 
 export class App extends React.Component <AppProps, AppState> {
@@ -25,6 +29,7 @@ export class App extends React.Component <AppProps, AppState> {
       connected: false,
       messages: [],
       lastSentMessage: Date.now(),
+      username: this.props.initialUsername || 'devuser',
     };
 
     this.props.socket.on('connect', () => {
@@ -36,6 +41,11 @@ export class App extends React.Component <AppProps, AppState> {
     this.props.socket.on('authenticated', () => {
       this.setState({ authenticated: true })
     })
+    this.props.socket.on('authparams', async (authParams: AuthParams) => {
+      const username = this.state.username;
+      const idProof = await proveWorkUsername(username, authParams);
+      this.props.socket.emit('authentication', {...idProof})
+    })
   }
 
   componentDidMount(){
@@ -43,6 +53,17 @@ export class App extends React.Component <AppProps, AppState> {
       this.setState({
         messages: this.state.messages.concat(msg)
       })
+    })
+  }
+
+  setUsername = (newUsername:string) => {
+    localStorage.setItem('username', newUsername);
+    this.setState({
+      username: newUsername,
+      messages: [],
+    }, () => {
+      this.props.socket.disconnect();
+      this.props.socket.connect();
     })
   }
 
@@ -68,6 +89,8 @@ export class App extends React.Component <AppProps, AppState> {
         <Row style={{paddingTop:'1.5em'}}>
           <Col>
             <ChatForm key={this.state.lastSentMessage} disabled={!this.state.connected} onSend={this.sendMessage}/>
+            <hr/>
+            <UsernameSetter initialUsername={this.state.username} onSubmit={this.setUsername}/>
           </Col>
         </Row>
       </Container>
