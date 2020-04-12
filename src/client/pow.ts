@@ -1,4 +1,5 @@
 // pow.ts - Contains methods used for proof-of-work auth system
+import { AuthParams, AuthResponse, checkHashDifficulty } from '../shared';
 
 /**
  * Given an input string, calculate the SHA256 hash of it
@@ -13,33 +14,34 @@ export const calcSHA256 = async (str:string): Promise<string> => {
 }
 
 /**
- * Determine if the given hash is valid for the given difficulty
- * @param  hash       SHA256 hash string
- * @param  difficulty The difficulty level to calculate for
- * @return boolean
- */
-const checkHashDifficulty = (hash:string, difficulty:number): boolean => (
-  hash.substr(0, difficulty) === new Array(difficulty).fill('0').join('')
-)
-
-/**
  * Attempt to calculate a valid PoW hash given a string and difficulty
  * @param  str           Input string to hash
  * @param  difficulty    Difficulty target
  * @param  maxIterations Maximum amount of cycles to run for
  * @return               A map of strings with keys (str, nonce)
  */
-export const doProofWork = async (str:string, difficulty:number, maxIterations:number): Promise<{str:string, nonce:string}> => {
+export const doProofWork = async (str:string, difficulty:number, maxIterations:number): Promise<{str:string, nonce:string, hash:string}> => {
   let i = 0;
-  let valid: {str:string,nonce:string} = null;
+  let valid: {str:string,nonce:string,hash:string} = null;
   do {
     const nonce = String(Math.random());
-    const workHash = await calcSHA256(str + nonce);
-    if(checkHashDifficulty(workHash, difficulty)){
-      valid = {str, nonce};
+    const hash = await calcSHA256([str, nonce].join(''));
+    if(checkHashDifficulty(hash, difficulty)){
+      valid = {str, nonce, hash};
     }
     i++;
   }
   while(i < maxIterations && valid === null);
   return valid;
+}
+
+export const proveWorkUsername = async (username:string, params:AuthParams, maxIterations:number = 100000): Promise<AuthResponse> => {
+  const proveString = [username, params.salt].join('');
+  const workProof = await doProofWork(proveString, params.difficulty, maxIterations);
+  return {
+    salt: params.salt,
+    nonce: workProof.nonce,
+    username: username,
+    hash: workProof.hash
+  }
 }
