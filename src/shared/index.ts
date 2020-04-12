@@ -1,3 +1,5 @@
+export * from './docker-names';
+
 export type ChatMessageData = {
   id: string;
   sender_id: string;

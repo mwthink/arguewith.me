@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Button, Form, Input } from 'reactstrap';
+import { generatePetName } from '../shared';
 
 export interface UsernameSetterProps {
   initialUsername: string;
@@ -31,6 +32,7 @@ export class UsernameSetter extends React.Component <UsernameSetterProps,Usernam
           onChange={e => this.setState({username:e.target.value})}
         />
         <Button type="submit">Set Username</Button>
+        <Button onClick={e => {e.preventDefault();this.props.onSubmit(generatePetName())}}>Generate Random Name</Button>
       </Form>
     )
   }
