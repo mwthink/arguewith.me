@@ -10,6 +10,7 @@ export interface AppProps {
 }
 
 interface AppState {
+  authenticated: boolean;
   connected: boolean;
   messages: ChatMessageData[];
   lastSentMessage: number;
@@ -20,16 +21,20 @@ export class App extends React.Component <AppProps, AppState> {
   constructor(props:any){
     super(props);
     this.state = {
+      authenticated: false,
       connected: false,
       messages: [],
       lastSentMessage: Date.now(),
     };
 
     this.props.socket.on('connect', () => {
-      this.setState({connected: true })
+      this.setState({ connected: true })
     })
     this.props.socket.on('disconnect', () => {
-      this.setState({connected: false })
+      this.setState({ connected: false })
+    })
+    this.props.socket.on('authenticated', () => {
+      this.setState({ authenticated: true })
     })
   }
 
@@ -48,6 +53,9 @@ export class App extends React.Component <AppProps, AppState> {
   }
 
   render(){
+    if(!this.state.authenticated){
+      return <b>Authenticating . . .</b>
+    }
     return (
       <Container>
         <Row>

@@ -22,10 +22,19 @@ const sockets = new Observable<SocketIO.Socket>(sub => {
       salt: String(Math.random())
     };
     socket.emit('authparams', authParams)
+
+    // If client is not authenticated by the authDeadlineSeconds, kick them out
+    const authDeadlineSeconds = 20;
+    const authTimeout = setTimeout(() => {
+      socket.disconnect();
+    }, authDeadlineSeconds * 1000)
+
     socket.on('authentication', async (payload: AuthResponse) => {
       if(await verifyAuthResponse(payload, authParams.difficulty, authParams.salt)){
         // Socket has successfully authenticated, send it into the stream
+        clearTimeout(authTimeout);
         socket['username'] = payload.username;
+        socket.emit('authenticated');
         return sub.next(socket);
       }
       return socket.disconnect(true);
