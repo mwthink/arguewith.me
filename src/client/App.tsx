@@ -5,7 +5,6 @@ import { ChatMessage } from './ChatMessage';
 import { ChatMessageData } from '../shared';
 import ChatForm from './ChatForm';
 
-
 export interface AppProps {
   socket: SocketIOClient.Socket;
 }
@@ -35,7 +34,7 @@ export class App extends React.Component <AppProps, AppState> {
   }
 
   componentDidMount(){
-    this.props.socket.on('message', (msg) => {
+    this.props.socket.on('message', (msg:ChatMessageData) => {
       this.setState({
         messages: this.state.messages.concat(msg)
       })
