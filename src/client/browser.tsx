@@ -7,7 +7,7 @@ import App from './App';
 const renderTarget = document.createElement('div');
 document.body.appendChild(renderTarget);
 
-const socket = SocketIOClient('http://localhost:3000');
+const socket = SocketIOClient();
 
 render(
   <App

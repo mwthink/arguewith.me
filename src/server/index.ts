@@ -1,4 +1,5 @@
 import * as Http from 'http';
+import * as Path from 'path';
 import * as Express from 'express';
 import * as SocketIO from 'socket.io';
 import { Observable, ReplaySubject } from 'rxjs';
@@ -60,6 +61,12 @@ sockets.subscribe(socket => {
     socket.send(msg);
   })
 })
+
+if( (process.env['SERVE_STATIC']||'false').toLowerCase() === 'true' ){
+  const staticPath = Path.resolve(__dirname,'../client');
+  console.log('Serving static assets from', staticPath);
+  app.use(Express.static(staticPath))
+}
 
 Promise.resolve()
 .then(() => (
