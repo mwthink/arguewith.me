@@ -7,6 +7,7 @@ const config: Configuration = {
   entry: Path.resolve(__dirname, 'src/client/browser.tsx'),
   output: {
     path: Path.resolve(__dirname, 'dist/client'),
+    publicPath: '/',
     filename: 'bundle.js',
   },
   resolve: {
