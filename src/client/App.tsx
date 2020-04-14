@@ -117,10 +117,8 @@ export class App extends React.Component <AppProps, AppState> {
           </Col>
         </Row>
       </Container>
-      <Container fluid style={{
-        position: 'fixed',
-        bottom: 0,
-        height: '15vh'
+      <Container style={{
+        paddingTop: '5vh'
       }}>
         <Row style={{}}>
           <Col>
