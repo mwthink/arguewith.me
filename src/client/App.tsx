@@ -1,140 +1,43 @@
 import * as React from 'react';
-import * as SocketIOClient from 'socket.io-client';
-import { Container, Row, Col } from 'reactstrap';
-import { ChatMessage } from './ChatMessage';
-import { proveWorkUsername } from './pow';
-import { AuthParams, ChatMessageData } from '../shared';
-import ChatForm from './ChatForm';
-import UsernameSetter from './UsernameSetter';
+import { ChatClientI, ChatMessageData } from '../shared';
+import Chat from './Chat';
 
 export interface AppProps {
-  socket: SocketIOClient.Socket;
-  initialUsername?: string;
+  chat: ChatClientI;
 }
 
 interface AppState {
-  authenticated: boolean;
   connected: boolean;
+  ready: boolean;
   messages: ChatMessageData[];
-  lastSentMessage: number;
-  username: string;
-  currentUsers: number;
 }
 
-export class App extends React.Component <AppProps, AppState> {
-
-  private chatBox: React.RefObject<HTMLDivElement>;
-
-  constructor(props:any){
-    super(props);
-    this.state = {
-      authenticated: false,
-      connected: false,
-      messages: [],
-      lastSentMessage: Date.now(),
-      username: this.props.initialUsername || 'devuser',
-      currentUsers: 0,
-    };
-
-    this.chatBox = React.createRef();
-
-    this.props.socket.on('connect', () => {
-      this.setState({ connected: true })
-    })
-    this.props.socket.on('disconnect', () => {
-      this.setState({
-        connected: false,
-        currentUsers: 0,
-      })
-    })
-    this.props.socket.on('authenticated', () => {
-      this.setState({ authenticated: true })
-    })
-    this.props.socket.on('authparams', async (authParams: AuthParams) => {
-      const username = this.state.username;
-      const idProof = await proveWorkUsername(username, authParams);
-      this.props.socket.emit('authentication', {...idProof})
-    })
-    this.props.socket.on('usercount', (userCount:number) => (
-      this.setState({currentUsers:userCount})
-    ))
+export class App extends React.Component<AppProps, AppState,{}> {
+  state: AppState = {
+    connected: false,
+    ready: false,
+    messages: []
   }
 
   componentDidMount(){
-    this.props.socket.on('message', (msg:ChatMessageData) => {
-      this.setState({
-        messages: this.state.messages.concat(msg)
-      })
-    })
-  }
-
-  setUsername = (newUsername:string) => {
-    localStorage.setItem('username', newUsername);
-    this.setState({
-      username: newUsername,
-      messages: [],
-    }, () => {
-      this.props.socket.disconnect();
-      this.props.socket.connect();
-    })
-  }
-
-  sendMessage = (msg:string) => {
-    this.props.socket.send(msg)
-    // TODO Only proceed after message was "sent"
-    this.setState({lastSentMessage:Date.now()})
-  }
-
-  scrollToChatBottom = () => {
-    const chatBox = this.chatBox.current;
-    if(!chatBox){
-      return;
-    }
-    this.chatBox.current.scrollTop = this.chatBox.current.scrollHeight;
-  }
-
-  componentDidUpdate(){
-    this.scrollToChatBottom()
+    this.props.chat.connected.subscribe(connected => this.setState({connected}))
+    this.props.chat.ready.subscribe(ready => this.setState({ready}))
+    this.props.chat.messages.subscribe(message => this.setState({
+      messages: this.state.messages.concat(message)
+    }))
   }
 
   render(){
-    if(!this.state.authenticated){
-      return <b>Authenticating . . .</b>
-    }
     return (
-      <>
-      <Container>
-        <Row>
-          <Col>
-            <div ref={this.chatBox} style={{
-              maxHeight: '80vh',
-              overflow: 'auto'
-            }}>
-              {this.state.messages.map(msg => (
-                <ChatMessage key={msg.id} message={msg}/>
-              ))}
-            </div>
-          </Col>
-        </Row>
-      </Container>
-      <Container style={{
-        paddingTop: '5vh'
-      }}>
-        <Row style={{}}>
-          <Col>
-            <ChatForm key={this.state.lastSentMessage} disabled={!this.state.connected} onSend={this.sendMessage}/>
-            <hr/>
-            <UsernameSetter key={this.state.username} initialUsername={this.state.username} onSubmit={this.setUsername}/>
-          </Col>
-        </Row>
-        <Row>
-          <Col>
-            <p>Current users: {this.state.currentUsers}</p>
-          </Col>
-        </Row>
-      </Container>
-      </>
+      <div>
+        <Chat messages={this.state.messages} handleSend={msg=>this.props.chat.sendMessage(msg)}/>
+        <hr/>
+        {this.renderDebug()}
+      </div>
     )
+  }
+  renderDebug(){
+    return <pre>{JSON.stringify(this.state,null,2)}</pre>
   }
 }
 

@@ -1,36 +1,35 @@
 import { createHash } from 'crypto';
-import { AuthResponse, checkHashDifficulty } from '../shared';
+import { PowParams, PowSolution, checkHashDifficulty, buildPowString } from '../shared';
 
 export const calcSHA256 = async (str:string): Promise<string> => {
   const hash = createHash('sha256').update(str).digest('hex');
   return hash;
 }
 
-export const verifyAuthResponse = async (auth:AuthResponse, difficulty:number, salt:string): Promise<boolean> => {
+export const verifyPowSolution = async (solution:PowSolution, params:PowParams): Promise<boolean> => {
   // Confirm input data shape
   if(
-    typeof auth !== 'object'
-    || typeof auth.hash !== 'string'
-    || typeof auth.nonce !== 'string'
-    || typeof auth.salt !== 'string'
-    || typeof auth.username !== 'string'
+    typeof solution !== 'object'
+    || typeof solution.hash !== 'string'
+    || typeof solution.nonce !== 'string'
+    || typeof solution.salt !== 'string'
+    || typeof solution.data !== 'string'
   ){
     return false;
   }
 
   // Check hash difficulty match
-  if(!checkHashDifficulty(auth.hash, difficulty)){
+  if(!checkHashDifficulty(solution.hash, params.difficulty)){
     return false;
   }
 
   // Confirm validity of salt
-  if(auth.salt !== salt){
+  if(solution.salt !== params.salt){
     return false;
   }
 
   // Verify work
-  const hashStr = [auth.username, auth.salt, auth.nonce].join('');
-  if(await calcSHA256(hashStr) !== auth.hash){
+  if(await calcSHA256(buildPowString(params, solution.data, solution.nonce)) !== solution.hash){
     return false;
   }
 
