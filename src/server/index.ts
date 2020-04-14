@@ -21,7 +21,7 @@ const messagePool = new ReplaySubject<ChatMessageData>(Number(process.env['MESSA
 const sockets = new Observable<SocketIO.Socket>(sub => {
   io.on('connection', socket => {
     const authParams: AuthParams = {
-      difficulty: 3,
+      difficulty: Number(process.env['POW_DIFFICULTY'] || 3),
       salt: String(Math.random())
     };
     socket.emit('authparams', authParams)
