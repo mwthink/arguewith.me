@@ -101,6 +101,11 @@ export class App extends React.Component <AppProps, AppState> {
             <UsernameSetter key={this.state.username} initialUsername={this.state.username} onSubmit={this.setUsername}/>
           </Col>
         </Row>
+        <Row>
+          <Col>
+            <p>Current users: ${this.state.currentUsers}</p>
+          </Col>
+        </Row>
       </Container>
     )
   }
