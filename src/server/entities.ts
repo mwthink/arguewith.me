@@ -25,6 +25,7 @@ export class SocketChatServer implements ChatServerI {
       socket.emit('authcheck', powParams);
       socket.on('authsolution', async (solution:PowSolution) => {
         if(await verifyPowSolution(solution, powParams)){
+          socket['username'] = solution.data;
           return this.sockets.next(socket);
         }
         // Failed authcheck, kick them
@@ -40,6 +41,7 @@ export class SocketChatServer implements ChatServerI {
         this.messages.next({
           id: uuid4(),
           sender_id: socket.id,
+          sender_display_name: socket['username'],
           content: msgContent,
           timestamp: Date.now()
         })
