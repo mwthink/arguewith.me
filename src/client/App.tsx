@@ -23,6 +23,8 @@ interface AppState {
 
 export class App extends React.Component <AppProps, AppState> {
 
+  private chatBox: React.RefObject<HTMLDivElement>;
+
   constructor(props:any){
     super(props);
     this.state = {
@@ -33,6 +35,8 @@ export class App extends React.Component <AppProps, AppState> {
       username: this.props.initialUsername || 'devuser',
       currentUsers: 0,
     };
+
+    this.chatBox = React.createRef();
 
     this.props.socket.on('connect', () => {
       this.setState({ connected: true })
@@ -81,24 +85,50 @@ export class App extends React.Component <AppProps, AppState> {
     this.setState({lastSentMessage:Date.now()})
   }
 
+  scrollToChatBottom = () => {
+    const chatBox = this.chatBox.current;
+    if(!chatBox){
+      return;
+    }
+    this.chatBox.current.scrollTop = this.chatBox.current.scrollHeight;
+  }
+
+  componentDidUpdate(){
+    this.scrollToChatBottom()
+  }
+
   render(){
     if(!this.state.authenticated){
       return <b>Authenticating . . .</b>
     }
     return (
+      <>
       <Container>
         <Row>
           <Col>
-            {this.state.messages.map(msg => (
-              <ChatMessage key={msg.id} message={msg}/>
-            ))}
+            <div ref={this.chatBox} style={{
+              maxHeight: '80vh',
+              overflow: 'auto'
+            }}>
+              {this.state.messages.map(msg => (
+                <ChatMessage key={msg.id} message={msg}/>
+              ))}
+            </div>
           </Col>
         </Row>
-        <Row style={{paddingTop:'1.5em'}}>
+      </Container>
+      <Container fluid style={{
+        position: 'fixed',
+        bottom: 0,
+        height: '15vh'
+      }}>
+        <Row style={{}}>
           <Col>
             <ChatForm key={this.state.lastSentMessage} disabled={!this.state.connected} onSend={this.sendMessage}/>
-            <hr/>
-            <UsernameSetter key={this.state.username} initialUsername={this.state.username} onSubmit={this.setUsername}/>
+            {/*
+              <hr/>
+              <UsernameSetter key={this.state.username} initialUsername={this.state.username} onSubmit={this.setUsername}/>
+              */}
           </Col>
         </Row>
         <Row>
@@ -107,6 +137,7 @@ export class App extends React.Component <AppProps, AppState> {
           </Col>
         </Row>
       </Container>
+      </>
     )
   }
 }
