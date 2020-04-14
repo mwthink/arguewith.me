@@ -103,7 +103,7 @@ export class App extends React.Component <AppProps, AppState> {
         </Row>
         <Row>
           <Col>
-            <p>Current users: ${this.state.currentUsers}</p>
+            <p>Current users: {this.state.currentUsers}</p>
           </Col>
         </Row>
       </Container>
