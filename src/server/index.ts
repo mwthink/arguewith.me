@@ -17,7 +17,7 @@ const io = SocketIO(server);
 
 
 const userCount = new BehaviorSubject<number>(0);
-const messagePool = new ReplaySubject<ChatMessageData>(100);
+const messagePool = new ReplaySubject<ChatMessageData>(Number(process.env['MESSAGE_POOL_SIZE' || 100]));
 const sockets = new Observable<SocketIO.Socket>(sub => {
   io.on('connection', socket => {
     const authParams: AuthParams = {
