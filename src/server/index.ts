@@ -2,7 +2,7 @@ import * as Http from 'http';
 import * as Path from 'path';
 import * as Express from 'express';
 import * as SocketIO from 'socket.io';
-import { Observable, ReplaySubject } from 'rxjs';
+import { Observable, BehaviorSubject, ReplaySubject } from 'rxjs';
 import { v4 as uuid4} from 'uuid';
 import { verifyAuthResponse } from './pow';
 import { AuthParams, AuthResponse, ChatMessageData } from '../shared';
@@ -15,6 +15,8 @@ const io = SocketIO(server);
   return uuid4();
 }
 
+
+const userCount = new BehaviorSubject<number>(0);
 const messagePool = new ReplaySubject<ChatMessageData>(100);
 const sockets = new Observable<SocketIO.Socket>(sub => {
   io.on('connection', socket => {
@@ -43,8 +45,14 @@ const sockets = new Observable<SocketIO.Socket>(sub => {
   });
 })
 
+userCount.subscribe(userCount => {
+  io.emit('usercount', userCount);
+})
+
 sockets.subscribe(socket => {
   // console.log('got socket connection @', new Date().toLocaleTimeString());
+  userCount.next(userCount.getValue() + 1);
+  socket.on('disconnect', () => userCount.next(userCount.getValue() - 1))
 
   socket.on('message', (msg) => {
     // console.log('got message from', socket.id, `that says "${msg}"`);

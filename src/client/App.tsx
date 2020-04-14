@@ -18,6 +18,7 @@ interface AppState {
   messages: ChatMessageData[];
   lastSentMessage: number;
   username: string;
+  currentUsers: number;
 }
 
 export class App extends React.Component <AppProps, AppState> {
@@ -30,13 +31,17 @@ export class App extends React.Component <AppProps, AppState> {
       messages: [],
       lastSentMessage: Date.now(),
       username: this.props.initialUsername || 'devuser',
+      currentUsers: 0,
     };
 
     this.props.socket.on('connect', () => {
       this.setState({ connected: true })
     })
     this.props.socket.on('disconnect', () => {
-      this.setState({ connected: false })
+      this.setState({
+        connected: false,
+        currentUsers: 0,
+      })
     })
     this.props.socket.on('authenticated', () => {
       this.setState({ authenticated: true })
@@ -46,6 +51,9 @@ export class App extends React.Component <AppProps, AppState> {
       const idProof = await proveWorkUsername(username, authParams);
       this.props.socket.emit('authentication', {...idProof})
     })
+    this.props.socket.on('usercount', (userCount:number) => (
+      this.setState({currentUsers:userCount})
+    ))
   }
 
   componentDidMount(){
