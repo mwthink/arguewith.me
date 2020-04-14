@@ -12,10 +12,14 @@ const socketEndpoint = ((['localhost','127.0.0.1'].indexOf(location.hostname) > 
 
 const socket = SocketIOClient(socketEndpoint);
 
+if(localStorage.getItem('username') === null){
+  localStorage.setItem('username', generatePetName());
+}
+
 render(
   <App
     socket={socket}
-    initialUsername={localStorage.getItem('username') || generatePetName()}
+    initialUsername={localStorage.getItem('username')}
   />
   ,renderTarget
 )
