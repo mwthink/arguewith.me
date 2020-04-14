@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Card, CardBody, CardTitle, CardText } from 'reactstrap';
+import * as ReactMarkdown from 'react-markdown';
 import { ChatMessageData } from '../shared';
 
 const Timestamp: React.SFC<{time:number}> = props => (
@@ -18,7 +19,7 @@ export const ChatMessage: React.SFC<ChatMessageProps> = (props:ChatMessageProps)
       <CardTitle style={{cursor:'default'}}>
         <span className="font-weight-bold">{props.message.sender_display_name || props.message.sender_id}</span> - <Timestamp time={props.message.timestamp}/>
       </CardTitle>
-      <CardText>{props.message.content}</CardText>
+      <ReactMarkdown source={props.message.content}/>
     </CardBody>
   </Card>
 )
