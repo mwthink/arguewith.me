@@ -123,10 +123,8 @@ export class App extends React.Component <AppProps, AppState> {
         <Row style={{}}>
           <Col>
             <ChatForm key={this.state.lastSentMessage} disabled={!this.state.connected} onSend={this.sendMessage}/>
-            {/*
-              <hr/>
-              <UsernameSetter key={this.state.username} initialUsername={this.state.username} onSubmit={this.setUsername}/>
-              */}
+            <hr/>
+            <UsernameSetter key={this.state.username} initialUsername={this.state.username} onSubmit={this.setUsername}/>
           </Col>
         </Row>
         <Row>
