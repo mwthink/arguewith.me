@@ -6,7 +6,7 @@ import { ChatMessageData, PowParams, PowSolution } from '../shared';
 import { verifyPowSolution } from './pow';
 
 const generatePowParams = (): PowParams => ({
-  difficulty: 1,
+  difficulty: 3,
   salt: String(Math.random())
 })
 
