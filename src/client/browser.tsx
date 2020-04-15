@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { render } from 'react-dom';
 import * as SocketIO from 'socket.io-client';
-import { generatePetName } from '../shared';
 import { SocketIOChatClient } from './ChatClient';
 import { BrowserPowSolver } from './BrowserPow';
 import App from './App';
@@ -16,10 +15,6 @@ const socket = SocketIO(socketEndpoint, {
   // autoConnect: false
 });
 
-if(localStorage.getItem('username') === null){
-  localStorage.setItem('username', generatePetName());
-}
-
 const chatClient = new SocketIOChatClient(socket as any, new BrowserPowSolver());
 
 render(
@@ -28,11 +23,3 @@ render(
   />
   ,renderTarget
 )
-
-// render(
-//   <App
-//     socket={socket}
-//     initialUsername={localStorage.getItem('username')}
-//   />
-//   ,renderTarget
-// )

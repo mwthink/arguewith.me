@@ -1,6 +1,6 @@
 import * as SocketIO from 'socket.io-client';
 import { Observable, Subject, BehaviorSubject, fromEvent } from 'rxjs';
-import { ChatClientI, ChatMessageData } from '../shared';
+import { ChatClientI, ChatMessageData, generatePetName } from '../shared';
 import { PowSolverI, PowParams } from '../shared';
 
 export class SocketIOChatClient implements ChatClientI {
@@ -16,7 +16,10 @@ export class SocketIOChatClient implements ChatClientI {
 
   constructor(socket:SocketIO.Socket, solver:PowSolverI){
     this.socket = socket;
-    this.username = 'my_username';
+    if(!localStorage.getItem('username')){
+      localStorage.setItem('username', generatePetName());
+    }
+    this.username = localStorage.getItem('username');
 
     this.authRequests = fromEvent<PowParams>(this.socket, 'authcheck');
 
@@ -52,6 +55,7 @@ export class SocketIOChatClient implements ChatClientI {
 
   async setUsername(newUsername:string){
     this.username = newUsername;
+    localStorage.setItem('username', newUsername);
     this.socket.disconnect();
     (this.socket as any).connect();
   }
