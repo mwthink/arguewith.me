@@ -4,6 +4,7 @@ export type ChatMessageData = {
   sender_display_name?: string;
   content: string;
   timestamp: number;
+  isAdminMessage: boolean;
 }
 
 export type PowParams = {

@@ -10,13 +10,13 @@ export interface ChatMessageProps {
   message: ChatMessageData;
 }
 export const ChatMessage: React.SFC<ChatMessageProps> = ({message}) => (
-  <div>
+  <Alert color={message.isAdminMessage ? 'primary' : 'dark'} fade={false}>
     <small>
       <span className={'font-weight-bold'}>{message.sender_display_name}{' @ '}</span>
       <span>{new Date(message.timestamp).toLocaleTimeString()}</span>
     </small>
     <ReactMarkdown source={message.content}/>
-  </div>
+  </Alert>
 )
 
 export interface ChatProps {
@@ -48,13 +48,11 @@ export const Chat: React.FunctionComponent<ChatProps> = props => {
   return (
     <>
       <Row>
-        <div>
         {props.messages.map(m => (
           <Col key={m.id} xs={12}>
             <ChatMessage message={m}/>
           </Col>
         ))}
-        </div>
       </Row>
       <Row>
         <Col>

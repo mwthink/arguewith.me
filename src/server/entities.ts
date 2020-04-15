@@ -43,7 +43,8 @@ export class SocketChatServer implements ChatServerI {
           sender_id: socket.id,
           sender_display_name: socket['username'],
           content: msgContent,
-          timestamp: Date.now()
+          timestamp: Date.now(),
+          isAdminMessage: false,
         })
       })
     })
@@ -56,7 +57,8 @@ export class SocketChatServer implements ChatServerI {
       sender_id: 'SERVER',
       sender_display_name: '[Server]',
       content: msgContent,
-      timestamp: Date.now()
+      timestamp: Date.now(),
+      isAdminMessage: true
     })
   }
 }
