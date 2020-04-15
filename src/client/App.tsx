@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Container } from 'reactstrap';
 import { ChatClientI, ChatMessageData } from '../shared';
 import Chat from './Chat';
 
@@ -24,16 +25,18 @@ export class App extends React.Component<AppProps, AppState,{}> {
     this.props.chat.ready.subscribe(ready => this.setState({ready}))
     this.props.chat.messages.subscribe(message => this.setState({
       messages: this.state.messages.concat(message)
+    },() => {
+      // This bit will scroll the window to the bottom when the messages are updated
+      // This is awful and I feel dirty implementing it, but it works
+      window.scrollTo(0,document.querySelector('.container').scrollHeight)
     }))
   }
 
   render(){
     return (
-      <div>
+      <Container>
         <Chat messages={this.state.messages} handleSend={msg=>this.props.chat.sendMessage(msg)}/>
-        <hr/>
-        {this.renderDebug()}
-      </div>
+      </Container>
     )
   }
   renderDebug(){

@@ -16,7 +16,7 @@ export class SocketChatServer implements ChatServerI {
 
   constructor(io:SocketServer){
     this.sockets = new Subject<Socket>();
-    this.messages = new ReplaySubject<ChatMessageData>(0);
+    this.messages = new ReplaySubject<ChatMessageData>(30);
 
     // Listen for incoming connections and authenticate them
     // After authentication, put them into the sockets stream
