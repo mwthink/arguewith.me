@@ -20,6 +20,7 @@ export const ChatMessage: React.SFC<ChatMessageProps> = ({message}) => (
 )
 
 export interface ChatProps {
+  disabled?: boolean;
   messages: ChatMessageData[];
   handleSend: (msg:string) => any;
 }
@@ -29,6 +30,9 @@ export const Chat: React.FunctionComponent<ChatProps> = props => {
   const handleSubmit = (e?:React.SyntheticEvent<HTMLFormElement>) => {
     if(e){
       e.preventDefault();
+    }
+    if(props.disabled){
+      return;
     }
     props.handleSend(input.trim());
     setInput('');
@@ -63,7 +67,7 @@ export const Chat: React.FunctionComponent<ChatProps> = props => {
                 onKeyDown={e => handleInputKeyDown(e)}
               />
               <InputGroupAddon addonType={'append'}>
-                <Button type="submit">Send</Button>
+                <Button disabled={props.disabled} type="submit">Send</Button>
               </InputGroupAddon>
             </InputGroup>
           </Form>

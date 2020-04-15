@@ -35,7 +35,7 @@ export class App extends React.Component<AppProps, AppState,{}> {
   render(){
     return (
       <Container>
-        <Chat messages={this.state.messages} handleSend={msg=>this.props.chat.sendMessage(msg)}/>
+        <Chat disabled={!this.state.ready} messages={this.state.messages} handleSend={msg=>this.props.chat.sendMessage(msg)}/>
       </Container>
     )
   }
