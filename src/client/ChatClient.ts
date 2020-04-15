@@ -12,8 +12,11 @@ export class SocketIOChatClient implements ChatClientI {
   readonly connected: Subject<boolean>;
   readonly ready: Subject<boolean>;
 
+  username: string;
+
   constructor(socket:SocketIO.Socket, solver:PowSolverI){
     this.socket = socket;
+    this.username = 'my_username';
 
     this.authRequests = fromEvent<PowParams>(this.socket, 'authcheck');
 
@@ -31,7 +34,7 @@ export class SocketIOChatClient implements ChatClientI {
     })
 
     this.authRequests.subscribe( async (req) => {
-      const solution = await solver.solve(req, 'my_username')
+      const solution = await solver.solve(req, this.username)
       this.socket.emit('authsolution', solution);
     })
 
@@ -45,6 +48,12 @@ export class SocketIOChatClient implements ChatClientI {
   async sendMessage(content:string){
     console.log('sending msg');
     this.socket.send(content);
+  }
+
+  async setUsername(newUsername:string){
+    this.username = newUsername;
+    this.socket.disconnect();
+    (this.socket as any).connect();
   }
 }
 

@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { Container } from 'reactstrap';
+import { Button, Container, Row, Col } from 'reactstrap';
 import { ChatClientI, ChatMessageData } from '../shared';
 import Chat from './Chat';
+import Settings from './Settings';
 
 export interface AppProps {
   chat: ChatClientI;
@@ -22,7 +23,10 @@ export class App extends React.Component<AppProps, AppState,{}> {
 
   componentDidMount(){
     this.props.chat.connected.subscribe(connected => this.setState({connected}))
-    this.props.chat.ready.subscribe(ready => this.setState({ready}))
+    this.props.chat.ready.subscribe(ready => this.setState({
+      ready,
+      messages: ready ? this.state.messages : []
+    }))
     this.props.chat.messages.subscribe(message => this.setState({
       messages: this.state.messages.concat(message)
     },() => {
@@ -36,6 +40,15 @@ export class App extends React.Component<AppProps, AppState,{}> {
     return (
       <Container>
         <Chat disabled={!this.state.ready} messages={this.state.messages} handleSend={msg=>this.props.chat.sendMessage(msg)}/>
+        <Row>
+          <Col>
+            <hr />
+            <Settings
+              clientUsername={this.props.chat.username}
+              setClientUsername={un=>this.props.chat.setUsername(un)}
+              />
+          </Col>
+        </Row>
       </Container>
     )
   }

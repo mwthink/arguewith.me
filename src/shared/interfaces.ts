@@ -6,8 +6,10 @@ export interface ChatClientI {
   readonly authenticated: Observable<boolean>;
   readonly ready: Observable<boolean>;
   readonly connected: Observable<boolean>;
+  readonly username: string;
 
   sendMessage(content:string): Promise<void>;
+  setUsername(newName:string): any;
 }
 
 export interface PowSolverI {
